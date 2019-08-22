@@ -46,7 +46,7 @@ class CastorECIBot():
 
     def initParameters(self):
         ## TODO: Hide the Token, it can be used by anyone to control the bot!
-        self.token = self.rospy.get_param('/token', '913726881:AAH7kvp95qMlS4fD9hwFfSySl1vBVO_jDXc')
+        self.token = self.rospy.get_param('/token', '')
         if self.token is None:
             self.rospy.logerr("[%s] No token found in /telegram/token param server.", self.name)
             exit(0)
