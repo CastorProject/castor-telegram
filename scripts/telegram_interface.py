@@ -2,14 +2,21 @@
 # -*- coding: utf-8 -*-
 
 from threading import Thread
+import random
 
 #ROS Libraries
 import rospy
 from std_msgs.msg import String
 
 #Telegram Libraries
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 from telegram import ReplyKeyboardMarkup, KeyboardButton as Button
+
+from commands.start.command import start
+from commands.start.keyboards import start_keyboard
+from commands.emotions.command import emotions
+from commands.emotions.callback import emotions_callback
+from commands.ping.command import ping
 
 #Telegram logging
 import logging
@@ -27,24 +34,24 @@ class CastorECIBot():
         self.initSubscribers()
         self.initPublishers()
         self.initVariables()
-        self.main_ros()
+        #self.main_ros()
         #self.rospy.spin()
-        #Call of main loop is done by Threads
 
     def initNode(self):
         self.rospy = rospy
         self.rospy.init_node(self.name, anonymous = False)
         self.rospy.loginfo("[%s] Starting", self.name)
+        self.rate = self.rospy.Rate(20)
         return
 
     def initParameters(self):
         ## TODO: Hide the Token, it can be used by anyone to control the bot!
-        self.token = self.rospy.get_param('/token', '946333850:AAH859ChF-9jlIumuqWsIgXmQ6MMxCuBFTM')
+        self.token = self.rospy.get_param('/token', '913726881:AAH7kvp95qMlS4fD9hwFfSySl1vBVO_jDXc')
         if self.token is None:
-            self.rospy.logerr("No token found in /telegram/token param server.")
+            self.rospy.logerr("[%s] No token found in /telegram/token param server.", self.name)
             exit(0)
         else:
-            self.rospy.loginfo("Got telegram bot token from param server.")
+            self.rospy.loginfo("[%s] Got telegram bot token from param server.", self.name)
         self.emotionsTopic = self.rospy.get_param('/emotions_topic', '/emotions')
         return
 
@@ -57,100 +64,24 @@ class CastorECIBot():
 
     def initVariables(self):
         self.selected_function = False
-        return
-
-    def createKeyboard(self, strKeys):
-        keyboard = []
-        for row in strKeys:
-            newRow = map(Button, row)
-            keyboard.append(newRow)
-        return keyboard
-
-    #@send_typing_action
-    def start(self, update, context):
-        keyboardStr = [
-            ['Emotions'],
-            ['Teleop']
+        # TODO: Add more phrases
+        self.random_phrases = [
+            "Por el momento, no sé como responder a eso 🤔",
+            "Yo soy el robot Castor!",
         ]
-        keyboard = self.createKeyboard(keyboardStr)
-        reply_markup = ReplyKeyboardMarkup(keyboard)
-        message = (
-            "🇨🇴 Hola! Yo soy CastorBot! \n"
-    		"Estas son mis funcionalidades: \n\n"
-    		"*Emotions* - Controla las emociones de Castor\n\n"
-    		"Intenta ahora!"
-    	)
-        update.message.reply_text(
-            message,
-            reply_markup = reply_markup,
-            parse_mode = 'markdown'
-        )
-        return
-
-    #@send_typing_action
-    def emotions(self, update, context):
-        keyboardStr = [
-            ['Happy 😄', 'Sad 🙁'],
-            ['Surprise 😲', 'Talk 🗣️'],
-            ["◀️ Back"]
-        ]
-        keyboard = self.createKeyboard(keyboardStr)
-        reply_markup = ReplyKeyboardMarkup(keyboard)
-        message = (
-            "Selecciona una emoción!"
-        )
-        update.message.reply_text(
-            message,
-            reply_markup = reply_markup,
-            parse_mode = 'markdown'
-        )
-        return
-
-    def menu(self, update, context):
-        keyboardStr = [
-            ['Emotions'],
-            ['Teleop']
-        ]
-        keyboard = self.createKeyboard(keyboardStr)
-        reply_markup = ReplyKeyboardMarkup(keyboard)
-        message = (
-            "🤖 Estas son mis funcionalides 🤖\n",
-            "Selecciona una!"
-    	)
-        update.message.reply_text(
-            message,
-            reply_markup = reply_markup,
-            parse_mode = 'markdown'
-        )
         return
 
     def textCallback(self, update, context):
-        text = update.message.text
-        if self.selected_function == True:
-            print(text)
-            ros_msg = None
-            if text == u'Happy 😄':
-                ros_msg = "happy"
-            elif text == u'Sad 🙁':
-                ros_msg = "sad"
-            elif text == u'Surprise 😲':
-                ros_msg = "surprise"
-            elif text == u'Talk 🗣️':
-                ros_msg = "talk"
-            elif text == u'◀️ Back':
-                self.selected_function = False
-                self.menu(update, context)
-            else:
-                pass
-            if ros_msg != None:
-                self.pubEmotions.publish(ros_msg)
-                self.emotions(update, context)
-        else:
-            if text == 'Emotions':
-                self.emotions(update, context)
-                self.selected_function = True
-            else:
-                self.selected_function = False
+        keyboard = start_keyboard()
+        reply_markup = ReplyKeyboardMarkup(keyboard)
+        message = (
+            random.choice(self.random_phrases)
+        )
+        update.message.reply_text(
+            message,
+            reply_markup = reply_markup,
+            parse_mode = 'markdown'
+        )
         return
 
     def error(self):
@@ -160,27 +91,36 @@ class CastorECIBot():
 
     def main_ros(self):
         self.rospy.loginfo("[%s] ROS interfacer for Telegram bot OK", self.name)
-        self.main_bot()
-        self.rospy.spin()
+        while not self.rospy.is_shutdown():
+            self.rate.sleep()
+        print("**")
 
     def main_bot(self):
         updater = Updater(self.token, use_context = True)
         dp = updater.dispatcher
 
-        dp.add_handler(CommandHandler("start", self.start))
+        dp.add_handler(CommandHandler("start", start))
+        dp.add_handler(CommandHandler("emociones", emotions, pass_chat_data = True))
+        dp.add_handler(CallbackQueryHandler(lambda update, context: emotions_callback(update, context, self.pubEmotions)))
+        dp.add_handler(CommandHandler("ping", ping))
+        #dp.add_handler(CommandHandler("prueba", lambda update, context: prueba(update, context, self.pubEmotions)))
         dp.add_handler(MessageHandler(Filters.text, self.textCallback))
+
         dp.add_error_handler(self.error)
 
         updater.start_polling()
         logger.info('Listening humans as %s..' % updater.bot.username)
         self.rospy.loginfo('[%s] Telegram Updater for %s OK', updater.bot.username, self.name)
         updater.idle()
-        self.main_ros()
+
         return
 
 if __name__ == '__main__':
-    try:
-        Bot = CastorECIBot('telegram_bot')
+    #try:
+        Bot = CastorECIBot('CastorProjectBot')
+        thread1 = Thread(target = Bot.main_ros)
+        thread1.start()
+        Bot.main_bot()
     #Bot.main_bot()
-    except:
-        print("Something's gone wrong. Exiting")
+    #except:
+    #    print("Something's gone wrong. Exiting")
