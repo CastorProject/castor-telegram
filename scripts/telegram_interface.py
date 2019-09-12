@@ -17,6 +17,8 @@ from commands.start.keyboards import start_keyboard
 from commands.emotions.command import emotions
 from commands.emotions.callback import emotions_callback
 from commands.ping.command import ping
+from commands.greetings.command import greetings
+from commands.config.command import config
 
 #Telegram logging
 import logging
@@ -53,6 +55,7 @@ class CastorECIBot():
         else:
             self.rospy.loginfo("[%s] Got telegram bot token from param server.", self.name)
         self.emotionsTopic = self.rospy.get_param('/emotions_topic', '/emotions')
+        self.greetingsTopic = self.rospy.get_param('/greetings_topic', '/movements')
         return
 
     def initSubscribers(self):
@@ -60,6 +63,7 @@ class CastorECIBot():
 
     def initPublishers(self):
         self.pubEmotions = self.rospy.Publisher(self.emotionsTopic, String, queue_size = 5)
+        self.pubGreetings = self.rospy.Publisher(self.greetingsTopic, String, queue_size = 5)
         return
 
     def initVariables(self):
@@ -101,6 +105,8 @@ class CastorECIBot():
 
         dp.add_handler(CommandHandler("start", start))
         dp.add_handler(CommandHandler("emociones", emotions, pass_chat_data = True))
+        dp.add_handler(CommandHandler("saludos", lambda update,context: greetings(update, context, self.pubGreetings)))
+        dp.add_handler(CommandHandler("config", config))
         dp.add_handler(CallbackQueryHandler(lambda update, context: emotions_callback(update, context, self.pubEmotions)))
         dp.add_handler(CommandHandler("ping", ping))
         #dp.add_handler(CommandHandler("prueba", lambda update, context: prueba(update, context, self.pubEmotions)))
