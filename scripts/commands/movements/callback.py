@@ -2,24 +2,24 @@
 # -*- coding: utf-8 -*-
 from telegram import ReplyKeyboardRemove
 
-from commands.emotions.keyboards import emotions_keyboard
+from commands.movements.keyboards import movements_keyboard
 from commands.start.keyboards  import start_keyboard
 
-def emotions_callback(update, context, pubEmotions):
+def movements_callback(update, context, pubMovements):
     #Get update data
     query = update.callback_query
     #Check callback callback_data
     if query['data'] != "back":
-        print "publica"
-        #Publish emotion in ROS
-        pubEmotions.publish(query["data"])
+        print "public"
+        #Publish movements in ROS
+        pubMovements.publish(query["data"])
         #Notify Telegram that we have answered
         query.answer(text="")
         #Update answer
-        keyboard = emotions_keyboard()
+        keyboard = movements_keyboard()
         reply_markup = InlineKeyboardMarkup(keyboard)
         message = (
-            "Selecciona una emoción!"
+            "Selecciona una opción en el teclado:"
         )
         query.edit_message_text(
             text=message,
