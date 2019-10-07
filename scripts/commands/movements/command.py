@@ -5,6 +5,7 @@ from telegram import InlineKeyboardMarkup, ReplyKeyboardRemove
 from commands.movements.keyboards import movements_keyboard
 
 def movements(update, context):
+    context.chat_data["command"] = "movements"
     keyboard = movements_keyboard()
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = (

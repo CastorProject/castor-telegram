@@ -11,6 +11,7 @@ def movements_callback(update, context, pubMovements):
     #Check callback callback_data
     if query['data'] != "back":
         print "public"
+        print (query['data'])
         #Publish movements in ROS
         pubMovements.publish(query["data"])
         #Notify Telegram that we have answered
