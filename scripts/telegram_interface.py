@@ -16,9 +16,11 @@ from commands.start.command import start
 from commands.start.keyboards import start_keyboard
 from commands.emotions.command import emotions
 from commands.emotions.callback import emotions_callback
-from commands.ping.command import ping
 from commands.movements.command import movements
 from commands.movements.callback import movements_callback
+from commands.interaction.command import interaction
+from commands.interaction.callback import interaction_callback
+from commands.ping.command import ping
 from commands.config.command import config
 
 from callbacks.handler import callback_handler
@@ -109,6 +111,7 @@ class CastorECIBot():
         dp.add_handler(CommandHandler("start", start))
         dp.add_handler(CommandHandler("emociones", emotions, pass_chat_data = True))
         dp.add_handler(CommandHandler("hablar", movements, pass_chat_data = True))
+	dp.add_handler(CommandHandler("acciones", interaction, pass_chat_data = True))
         dp.add_handler(CommandHandler("config", config))
         dp.add_handler(CallbackQueryHandler(lambda update, context: callback_handler(update, context, self.pubEmotions, self.pubMovements)))
         #dp.add_handler(CallbackQueryHandler(lambda update, context: emotions_callback(update, context, self.pubEmotions)))

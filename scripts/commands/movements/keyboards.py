@@ -13,7 +13,7 @@ def movements_keyboard():
     callbackStr = [
         ['greet', 'nicetomeet', 'howru'],
         ['fine', 'play', 'guess'],
-        ['tryagain', 'nice', 'Lbye', 'greet_bye'],
+        ['tryagain', 'nice', 'bye', 'wave'],
         ['back']
     ]
     return createKeyboard(keyboardStr, "inline", callbackStr)
