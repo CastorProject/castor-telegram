@@ -1,0 +1,19 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from utils.create_keyboard import createKeyboard
+
+def movements_keyboard():
+    keyboardStr = [
+        ['Brazo', 'Saludo', 'Me alegro', 'Como estás', 'También'],
+        ['Muy bien', '¿Jugar?', 'Adivina', '¿Color?', '¿Animal?'],
+        ['Sigue intentando', 'Felicitar', 'Despedida', 'ChaoA', 'ChaoO'],
+        ['◀️ Atrás']
+    ]
+    callbackStr = [
+        ['wave', 'greet', 'nicetomeet', 'howru', 'metoo'],
+        ['fine', 'wantplay', 'guess', 'color', 'animal'],
+        ['tryagain', 'nice', 'byeL', 'byeB', 'byeG'],
+        ['back']
+    ]
+    return createKeyboard(keyboardStr, "inline", callbackStr)
