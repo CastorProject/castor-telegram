@@ -5,17 +5,17 @@ from utils.create_keyboard import createKeyboard
 
 def movements_keyboard():
     keyboardStr = [
-        ['Saludo', 'Me alegro', 'Como estás', 'Muy bien'],
-        ['¿Color?', '¿Animal?', 'También'],
+        ['👋', 'Me alegro', 'Como estás', 'Muy bien'],
+        ['¿Color?', '¿Animal?', 'También', '¿Ojos?', '¿Nariz?'],
         ['¿Jugar?', 'Adivina', 'Sigue intentando', 'Felicitar'],
-        ['Despedida', 'ChaoO', 'ChaoA'],
+        ['Despedida', '🙋‍♂️', '🙋', 'Boton'],
         ['◀️ Atrás']
     ]
     callbackStr = [
         ['greet', 'nicetomeet', 'howru', 'fine'],
-        ['color', 'animal', 'metoo'],
+        ['color', 'animal', 'metoo', 'eyes', 'nose'],
         ['wantplay', 'guess',  'tryagain', 'nice'],
-        ['byeL', 'byeB', 'byeG'],
+        ['byeL', 'byeB', 'byeG', 'button'],
         ['back']
     ]
     return createKeyboard(keyboardStr, "inline", callbackStr)

@@ -25,7 +25,6 @@ def callback_handler(update, context, pubEmotions, pubMovements):
     callback_function = command_callback[chat_data["command"]]
     publisher = publishers[chat_data["command"]]
     handled_response = callback_function(update, context, publisher)
-    print chat_data['command']
     #Check callback callback_data
     if chat_data['command'] == "emotions":
         #Notify Telegram that we have answered

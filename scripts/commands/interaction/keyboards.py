@@ -11,7 +11,7 @@ def interaction_keyboard():
 	['¿Tu cabeza?', '¿Tus ojos?', '¿Tu nariz?', '¿Tu boca?'],
 	['Tocar cabeza', 'Tocar ojos', 'Tocar nariz', 'Tocar boca'],
 	['Intenta otra vez', 'Bien hecho', 'Gracias'],
-	[ 'Despedida', 'ChaoO', 'ChaoA'],
+	[ 'Despedida', '🙋‍♂️', '🙋'],
         ['◀️ Atrás']
     ]
     callbackStr = [

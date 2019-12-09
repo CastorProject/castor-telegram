@@ -114,8 +114,6 @@ class CastorECIBot():
 	dp.add_handler(CommandHandler("acciones", interaction, pass_chat_data = True))
         dp.add_handler(CommandHandler("config", config))
         dp.add_handler(CallbackQueryHandler(lambda update, context: callback_handler(update, context, self.pubEmotions, self.pubMovements)))
-        #dp.add_handler(CallbackQueryHandler(lambda update, context: emotions_callback(update, context, self.pubEmotions)))
-        #dp.add_handler(CallbackQueryHandler(lambda update, context: movements_callback(update, context, self.pubMovements)))
         dp.add_handler(CommandHandler("ping", ping))
         #dp.add_handler(CommandHandler("prueba", lambda update, context: prueba(update, context, self.pubEmotions)))
         dp.add_handler(MessageHandler(Filters.text, self.textCallback))
